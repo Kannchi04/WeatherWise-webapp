@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weatherwise - Your Personal Weather Website</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            text-align: center;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            color: black;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .weather-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        canvas {
+            max-width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌦 Weatherwise</h1>
+        <p>Your Personal Weather Website</p>
+        <input type="text" id="city" placeholder="Enter city name" value="Indore">
+        <button onclick="getWeather()">Get Weather</button>
+        <p id="loading" style="display:none; color: #007bff; font-weight: bold;">Fetching weather data...</p>
+        <div id="weatherResult" class="weather-info" style="display:none;"></div>
+        <canvas id="tempChart"></canvas>
+        <canvas id="windChart"></canvas>
+        <p id="prediction" style="font-weight: bold; margin-top: 10px;"></p>
+    </div>
+
+    <script>
+        function getWeather() {
+            let city = document.getElementById("city").value;
+            let weatherResult = document.getElementById("weatherResult");
+            document.getElementById("loading").style.display = "block";
+            
+            setTimeout(() => {
+                let data = {
+                    weather: [{ description: "clear sky" }],
+                    main: { temp: 30, humidity: 50 },
+                    wind: { speed: 5 },
+                    history: {
+                        dates: ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5"],
+                        temp: [28, 29, 30, 27, 31],
+                        wind: [4, 5, 6, 5, 7]
+                    }
+                };
+                
+                document.getElementById("loading").style.display = "none";
+                
+                weatherResult.innerHTML = `
+                    <h2>Weather in ${city}</h2>
+                    <p>🌡 Temperature: ${data.main.temp}°C</p>
+                    <p>💧 Humidity: ${data.main.humidity}%</p>
+                    <p>💨 Wind Speed: ${data.wind.speed} m/s</p>
+                    <p>🌤 Condition: ${data.weather[0].description}</p>
+                `;
+                weatherResult.style.display = "block";
+                
+                updateCharts(data.history);
+                predictWeather(data);
+            }, 1500);
+        }
+
+        function updateCharts(history) {
+            let tempCtx = document.getElementById("tempChart").getContext("2d");
+            new Chart(tempCtx, {
+                type: "line",
+                data: {
+                    labels: history.dates,
+                    datasets: [{
+                        label: "Temperature (°C)",
+                        data: history.temp,
+                        borderColor: "#ff5733",
+                        fill: false,
+                        tension: 0.3
+                    }]
+                }
+            });
+            
+            let windCtx = document.getElementById("windChart").getContext("2d");
+            new Chart(windCtx, {
+                type: "bar",
+                data: {
+                    labels: history.dates,
+                    datasets: [{
+                        label: "Wind Speed (m/s)",
+                        data: history.wind,
+                        backgroundColor: "#673ab7"
+                    }]
+                }
+            });
+        }
+
+        function predictWeather(data) {
+            let predictedTemp = (data.main.temp + 2).toFixed(2);
+            document.getElementById("prediction").innerText = `🌡️ Predicted Avg Temperature for Next Day: ${predictedTemp}°C`;
+        }
+    </script>
+</body>
+</html>
