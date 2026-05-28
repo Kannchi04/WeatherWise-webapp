@@ -1,7 +1,5 @@
-```txt id="ycy0ij"
 requests
 pandas
 matplotlib
 seaborn
 scikit-learn
-```
